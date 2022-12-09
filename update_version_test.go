@@ -46,8 +46,10 @@ func TestUpdateVersion(t *testing.T) {
 	file, _ := ioutil.ReadFile("update.json")
 	var requestBody Profile
 	var url string
+	var auth string
 	httpServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		url = r.URL.Path
+		auth = r.Header.Get("Authorization")
 		json.NewDecoder(r.Body).Decode(&requestBody)
 		w.WriteHeader(http.StatusOK)
 		w.Header().Add("Content-Type", "application/json")
@@ -59,9 +61,15 @@ func TestUpdateVersion(t *testing.T) {
 	client.UpdateVersion("testAddress", inputBody)
 
 	if url == "/clientId:testAddress" {
-		t.Log("1 / 2: URLs match")
+		t.Log("1 / 3: URLs match")
 	} else {
 		t.Error("UpdateVersion FAILED. URLs do not match")
+	}
+
+	if auth == "Basic "+config.API_TOKEN {
+		t.Log(" 2 / 3: Auth matches")
+	} else {
+		t.Errorf("UpdateVersion FAILED, invalid authentication.")
 	}
 
 	if reflect.DeepEqual(inputBody, requestBody) {

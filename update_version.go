@@ -56,7 +56,7 @@ func GetMacFromCSV(pathToCSV string) []string {
 
 func (c Client) UpdateVersion(macAddress string, profile Profile) {
 	jsonProfile, _ := json.Marshal(profile)
-	req, err := http.NewRequest("PUT", c.baseUrl+"/clientId:"+macAddress, bytes.NewBuffer(jsonProfile))
+	req, err := http.NewRequest("PUT", c.baseUrl+"/"+config.CLIENT_ID+":"+macAddress, bytes.NewBuffer(jsonProfile))
 	if err != nil {
 		log.Fatal(err)
 	}
