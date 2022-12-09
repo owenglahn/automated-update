@@ -10,7 +10,6 @@ import (
 type Config struct {
 	API_BASE_URL string `yaml:"API_BASE_URL"`
 	API_TOKEN    string `yaml:"API_TOKEN"`
-	CLIENT_ID    string `yaml:"CLIENT_ID"`
 }
 
 var config Config
