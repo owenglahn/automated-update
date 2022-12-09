@@ -21,10 +21,14 @@ type Profile struct {
 	Applications []Application `json:"applications"`
 }
 
-func UpdateFromCSV(pathToCSV string, profile Profile) {
+type Client struct {
+	baseUrl string
+}
+
+func (c Client) UpdateFromCSV(pathToCSV string, profile Profile) {
 	macAddresses := GetMacFromCSV(pathToCSV)
 	for _, macAddress := range macAddresses {
-		UpdateVersion(macAddress, profile)
+		c.UpdateVersion(macAddress, profile)
 	}
 }
 
@@ -50,9 +54,9 @@ func GetMacFromCSV(pathToCSV string) []string {
 	return macAddresses
 }
 
-func UpdateVersion(macAddress string, profile Profile) {
+func (c Client) UpdateVersion(macAddress string, profile Profile) {
 	jsonProfile, _ := json.Marshal(profile)
-	req, err := http.NewRequest("PUT", config.API_BASE_URL+"/"+macAddress, bytes.NewBuffer(jsonProfile))
+	req, err := http.NewRequest("PUT", c.baseUrl+"/clientId:"+macAddress, bytes.NewBuffer(jsonProfile))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -61,12 +65,8 @@ func UpdateVersion(macAddress string, profile Profile) {
 	res, err := httpClient.Do(req)
 	if err != nil {
 		print(err)
-	} else if res.StatusCode != 204 {
+	} else if res.StatusCode != 200 {
 		print("Error" + strconv.Itoa(res.StatusCode))
 	}
 	res.Body.Close()
-}
-
-func SetHttpClient(client *http.Client) {
-	httpClient = client
 }
